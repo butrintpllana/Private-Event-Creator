@@ -12,6 +12,8 @@
     "@types/react-dom": "^18.0.5",
     "axios": "^0.27.2",
     "file-loader": "^6.2.0",
+    "mobx": "^6.6.1",
+    "mobx-react-lite": "^3.4.0",
     "react": "^18.2.0",
     "react-dom": "^18.2.0",
     "react-scripts": "^2.1.8",
