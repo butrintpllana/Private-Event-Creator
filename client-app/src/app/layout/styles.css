@@ -7,6 +7,15 @@ body{
 }
 
 
+
+.react-datepicke-wrapper{
+  width: 100%;
+}
+
+
+
+/*home page styles*/
+
 .masthead {
   display: flex;
   align-items: center;
