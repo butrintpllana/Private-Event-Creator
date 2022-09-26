@@ -1,45 +1,62 @@
-import axios, { AxiosResponse, AxiosResponseHeaders } from "axios";
-import { resolve } from "path";
+import axios, { AxiosResponse, } from "axios";
+import { config } from "process";
 import { Activity } from "../layout/models/activity";
+import { User, UserFormValues } from "../layout/models/user";
+import { store } from "../stores/store";
 
 
-const sleep = (delay: number) =>{
-    return new Promise ((resolve) => {
-        setTimeout(resolve, delay)
-    })
+const sleep = (delay: number) => {
+  return new Promise((resolve) => {
+    setTimeout(resolve, delay)
+  })
 }
 
-  axios.defaults.baseURL = 'http://localhost:5000/api';
+axios.defaults.baseURL = 'http://localhost:5000/api';
 
-  axios.interceptors.response.use(async response => {
-   try {
-          await sleep(1000);
-          return response;
-      } catch (error) {
-          console.log(error);
-          return await Promise.reject(error);
-      }
-  })
+axios.interceptors.request.use(config => {
+  const token = store.commonStore.token;
+  if (token) config.headers!.Authorization = `Bearer $ {token}`
+  return config;
 
-  const responseBody =  <T> (response: AxiosResponse<T>) => response.data;
 
-  const requests = {
-    get: <T> (url: string) => axios.get<T>(url).then(responseBody),
-    post: <T> (url: string, body: {}) => axios.post<T>(url, body).then(responseBody),
-    put: <T> (url: string, body: {}) => axios.put<T>(url, body).then(responseBody),
-    del: <T> (url: string) => axios.delete<T>(url).then(responseBody),
+})
+
+axios.interceptors.response.use(async response => {
+  try {
+    await sleep(1000);
+    return response;
+  } catch (error) {
+    console.log(error);
+    return await Promise.reject(error);
   }
+})
 
-  const Activities = {
-    list: () => requests.get<Activity[]>('/activities'),
-    details: (id: string) => requests.get<Activity>(`/activities/${id}`),
-    create:  (activity: Activity) => requests.post<void>('/activities', activity),
-    update:  (activity: Activity) => axios.put<void>(`/activities/${activity.id}`, activity),
-    delete: (id: string) => axios.delete<void>(`/activities/${id}`)
-  }
+const responseBody = <T>(response: AxiosResponse<T>) => response.data;
 
-  const agent = {
-    Activities
-  }
+const requests = {
+  get: <T>(url: string) => axios.get<T>(url).then(responseBody),
+  post: <T>(url: string, body: {}) => axios.post<T>(url, body).then(responseBody),
+  put: <T>(url: string, body: {}) => axios.put<T>(url, body).then(responseBody),
+  del: <T>(url: string) => axios.delete<T>(url).then(responseBody),
+}
 
-  export default agent;
+const Activities = {
+  list: () => requests.get<Activity[]>('/activities'),
+  details: (id: string) => requests.get<Activity>(`/activities/${id}`),
+  create: (activity: Activity) => requests.post<void>('/activities', activity),
+  update: (activity: Activity) => axios.put<void>(`/activities/${activity.id}`, activity),
+  delete: (id: string) => axios.delete<void>(`/activities/${id}`)
+}
+
+const Account = {
+  current: () => requests.get<User>('/account'),
+  login: (user: UserFormValues) => requests.post<User>('/account/login', user),
+  register: (user: UserFormValues) => requests.post<User>('/account/register', user),
+}
+
+const agent = {
+  Activities,
+  Account
+}
+
+export default agent;

@@ -7,7 +7,9 @@ import App from './app/layout/App';
 import reportWebVitals from './reportWebVitals';
 import { store, StoreContext } from './app/stores/store';
 import { BrowserRouter } from 'react-router-dom';
+import { createBrowserHistory } from 'history';
 
+export const history = createBrowserHistory();
 
 const root = ReactDOM.createRoot(
   document.getElementById('root') as HTMLElement
@@ -15,17 +17,19 @@ const root = ReactDOM.createRoot(
 
 
 
+
+
 root.render(
   <StoreContext.Provider value={store}>
-    <BrowserRouter>
-    <App />
+    <BrowserRouter >
+      <App />
     </BrowserRouter>
-      
-    
+
+
   </StoreContext.Provider>
-    
-    
- 
+
+
+
 );
 
 
